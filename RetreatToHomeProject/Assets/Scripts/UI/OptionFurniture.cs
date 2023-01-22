@@ -10,16 +10,33 @@ public class OptionFurniture : MonoBehaviour
     [SerializeField]
     private RawImage imageFurniture;
 
+    [SerializeField]
+    private TMPro.TextMeshProUGUI textPrice;
+
+    [SerializeField]
+    private int price;
+    public int Price
+    {
+        get { return price; }
+        set { price = value; }
+    }
+
     private Sprite spriteFurniture;
 
     private GetFurniture getFurnitureSelected;
+
+    private GetMoney getMoney;
 
     public Action<Sprite> OnGetSprite = delegate { };
 
     private void Awake()
     {
-        getFurnitureSelected = GameObject.FindObjectOfType<GetFurniture>();
+        textPrice.text = "$ " + price.ToString();
+        
+        getFurnitureSelected = GameObject.FindObjectOfType<GetFurniture>();                
         OnGetSprite += getFurnitureSelected.ChangeSpriteFurniture;
+
+        getMoney = GameObject.FindObjectOfType<GetMoney>();
     }
 
     public void SetImageFurniture(Texture2D texture)
@@ -34,6 +51,12 @@ public class OptionFurniture : MonoBehaviour
 
     public void GetSprite()
     {
-        OnGetSprite?.Invoke(spriteFurniture);
+        if (price <= getMoney.Money)
+        {
+            getMoney.Money -= price;
+            getMoney.SetTextAmountmoney();
+
+            OnGetSprite?.Invoke(spriteFurniture);
+        }
     }
 }
